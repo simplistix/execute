@@ -1,0 +1,9 @@
+Installation Instructions
+=========================
+
+The easyiest way to install Execute is::
+
+  easy_install execute
+
+Or, if you're using `zc.buildout`, just specify ``execute`` as a
+required egg. 

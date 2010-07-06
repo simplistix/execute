@@ -1,21 +1,22 @@
-# Copyright (c) 2009 Simplistix Ltd
+# Copyright (c) 2010 Simplistix Ltd
 # See license.txt for license details.
 
 import os
 from setuptools import setup, find_packages
 
-package_name = 'checker'
+package_name = 'execute'
+version = '1.0'
 base_dir = os.path.dirname(__file__)
 
 setup(
     name=package_name,
-    version=file(os.path.join(base_dir,package_name,'version.txt')).read().strip(),
+    version=version,
     author='Chris Withers',
     author_email='chris@simplistix.co.uk',
     license='MIT',
-    description="A tool for checking system configuration.",
+    description="Common patterns for executing commands as sub processes",
     long_description=open(os.path.join(base_dir,'docs','description.txt')).read(),
-    url='http://www.simplistix.co.uk/software/python/checker',
+    url='http://packages.python.org/execute',
     classifiers=[
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
@@ -23,23 +24,11 @@ setup(
     ],    
     packages=find_packages(),
     zip_safe=False,
-    install_requires = [
-        'argparse',
-        'mailinglogger',
-        'zope.dottedname',
-        ],
-    entry_points=dict(
-        console_scripts = [
-            'checker = checker:main',
-            ]
-        ),    
     extras_require=dict(
-        test=[            
+        test=[
             'manuel',
             'mock',
             'testfixtures',
-            'zc.buildout',
-            'zc.recipe.egg'
             ],
         )
     )

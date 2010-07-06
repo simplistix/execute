@@ -1,17 +1,17 @@
-# Copyright (c) 2009 Simplistix Ltd
+# Copyright (c) 2010 Simplistix Ltd
 #
 # See license.txt for more details.
 from __future__ import with_statement
 
 import sys
 
-from checker.command import execute
+from execute import simple
 from mock import Mock
 from subprocess import PIPE,STDOUT
 from testfixtures import tempdir,compare,Replacer
 from unittest import TestSuite,TestCase,makeSuite
 
-class TestExecute(TestCase):
+class TestSimple(TestCase):
 
     @tempdir()
     def test_out_and_err(self,d):
@@ -26,7 +26,7 @@ class TestExecute(TestCase):
                 "sys.stdout.flush()",
                 )),path=True)
         compare('stdout\nstderr\nstdout2\n',
-                execute(sys.executable+' '+path))
+                simple(sys.executable+' '+path))
     
     @tempdir()
     def test_args(self,d):
@@ -35,7 +35,7 @@ class TestExecute(TestCase):
                 "print sys.argv",
                 )),path=True)
         compare("[%r, 'x=1', '--y=2', 'a', 'b']\n" % path,
-                execute(sys.executable+' '+path+' x=1 --y=2 a b'))
+                simple(sys.executable+' '+path+' x=1 --y=2 a b'))
     
     @tempdir()
     def test_working_directory(self,d):
@@ -45,15 +45,15 @@ class TestExecute(TestCase):
                 "print os.getcwd()",
                 )),path=True)
         compare(dir+'\n',
-                execute(sys.executable+' '+path,cwd=dir))
+                simple(sys.executable+' '+path,cwd=dir))
 
     def test_popen_params(self):
         m = Mock()
         m.Popen.return_value = m.Popeni
         m.Popeni.communicate.return_value=('','')
         with Replacer() as r:
-            r.replace('checker.command.Popen',m.Popen)
-            execute('something')
+            r.replace('execute.Popen',m.Popen)
+            simple('something')
         compare(m.method_calls,[
                 ('Popen',
                  ('something',),
@@ -67,5 +67,5 @@ class TestExecute(TestCase):
     
 def test_suite():
     return TestSuite((
-        makeSuite(TestExecute),
+        makeSuite(TestSimple),
         ))

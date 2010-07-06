@@ -1,24 +1,9 @@
 =======
-Checker
+Execute
 =======
 
-This is a cross-platform, pluggable tool for comparing the
-configuration of a machine with a known configuration stored in text
-files in a source control system. 
+This is a collection of common patterns (and initially only one pattern!)
+for running executables in a sub-process using the ``subprocess``
+module.
 
-It currently supports comparison of the following types of
-configuration data:
-
-- text files and directories containing text files
-
-- Subversion checkouts
-
-- `buildouts`__
-
-- crontabs
-
-- installed Debian/Ubuntu package versions
-
-- run levels and priorities for daemons on Debian/Ubuntu systems
-
-__ http://pypi.python.org/pypi/zc.buildout
+For documentation, see `http://packages.python.org/execute`__

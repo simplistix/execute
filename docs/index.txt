@@ -1,12 +1,12 @@
-Checker documentation
-==========================
+Execute documentation
+=====================
 
 .. toctree::
    :maxdepth: 2
 
    installation.txt
    use.txt
-   checkers.txt
+   api.txt
    development.txt
    changes.txt
    license.txt

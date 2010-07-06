@@ -1,162 +1,48 @@
-Using Checker
+Using Execute
 =============
 
-.. invisible-code-block: python
+Execute currently only provides one pattern of sub-process
+execution. That pattern is covered by the :func:`~execute.simple`
+function described below.
 
-  from testfixtures import should_raise,compare
-  from checker.tests.base import OpenRaisesContext,ConfigContext
-  from checker.tests.base import OutputtingContext
-  from checker import main
+Simple
+------
 
-Once installed, checker is used by executing the checker script.
-This will look for a configuration, by default located in
-:file:`/config`. The configuration location can be overriden with a
-command line options to the checker script::
+The :func:`~execute.simple` function provides a simple way to run an
+executable in a sub-process that requires no input and where you'd
+like the output of both the standard and error output streams combined
+and returned in one string.
 
-  checker -C /some/folder
+For example, suppose you needed to execute the following python script
+in a sub-process::
 
-.. -> command
+  import sys
+  print sys.argv[1:]
+  sys.stdout.flush()
+  sys.stderr.write('An error occurred!\n')
 
-.. invisible-code-block: python
-
-  from __future__ import with_statement
-  with OpenRaisesContext(command.split()) as c:
-      should_raise(main,IOError("'/some/folder/checker.txt' 'rU'"))()
-
-.. _configuration-folder:
-
-Within the configuration folder, Checker looks for a file called
-:file:`checker.txt` that contains a list of rows defining the
-configurations to be checked, for example::
-
-  path:/some/folder
-  path:/some/file
-  
-  # blank lines and lines starting with hashes are ignored.
-  crontab:root
-  svn:/some/checkout
-  buildout:/some/buildout
-
-.. -> checker_txt
+.. -> source
 
 .. invisible-code-block: python
 
-  from __future__ import with_statement
-  with ConfigContext() as c:
-      c.run_with_config(checker_txt)
-      # order matters here!
-      c.check_checkers_called(
-                ('path',(c.dir.path,'/some/folder',),{}),
-                ('path',(c.dir.path,'/some/file',),{}),
-                ('crontab',(c.dir.path,'root',),{}),
-                ('svn',(c.dir.path,'/some/checkout',),{}),
-                ('buildout',(c.dir.path,'/some/buildout',),{}),
-                ('svn',(c.dir.path,c.dir.path,),{}),
-      )
+   path = temp_dir.write('test.py',source,path=True)
 
-Each one of these lines starts with the name of a checker followed by
-a colon. The remainder of the line is passed through to the checker
-for it to find the configuration information it should be checking.
-The checker may then write information to the configuration directory.
+As an aside, it's unlikely you'd want to do this. It's much more
+likely that you'd want to use :func:`~execute.simple` to run something
+that wasn't written in python.
 
-Once all the checkers have been run, an implict checker is run on the
-configuration folder itself. By default, the `svn` checker is used,
-but you can override this with a line in your :file:`checker.txt` as
-follows::
+However, if ``python`` contained the path to the python executable
+you'd want to use to run the above script, and ``path`` contained the
+path to the script on disk, you could use :func:`~execute.simple` to
+run it and capture the output as follows: 
 
-  config_checker:buildout
+>>> from execute import simple
+>>> output = simple(' '.join((python,path,'x=1 --y=2 a b')))
 
-.. -> checker_txt
+You now have the output in a string and you can do whatever you like
+with it:
 
-.. invisible-code-block: python
-
-  from __future__ import with_statement
-  with ConfigContext() as c:
-      c.run_with_config(checker_txt)
-      c.check_checkers_called(
-                ('buildout',(c.dir.path,c.dir.path,),{}),
-      )
-
-At the moment, the only sensible choices for the implicit checker are
-`svn`, `buildout` or `svn,buildout` to indicate the `svn` checker
-should be used followed by the `buildout` checker::
-
-  config_checker:svn,buildout
-
-.. -> checker_txt
-
-.. invisible-code-block: python
-
-  from __future__ import with_statement
-  with ConfigContext() as c:
-      c.run_with_config(checker_txt)
-      c.check_checkers_called(
-                ('svn',(c.dir.path,c.dir.path,),{}),
-                ('buildout',(c.dir.path,c.dir.path,),{}),
-      )
-
-
-
-.. note::
-
-  The implicit checker is run only once all other checkers have been
-  run. This means that if you have changes committed to the
-  configuration folder that are not present in the working copy, they
-  will only be retrieved once all other checkers have been run and so
-  may only been show up in checker notifications when Checker is next
-  run.
-
-By default, any changes found by a checker are printed to stdout. This
-makes Checker ideal for running as a nightly cron job where the output
-will be emailed to the user running the cron job.
-
-.. it's not important to show in the docs, but a doctest is a really
-   good way of showing the output to stdout:
-
-   >>> from logging import getLogger
-   >>> with OutputtingContext() as c:
-   ...   c.run_with_config('')
-   checker.checkers.real.check
-   checker.checkers.svn.check
- 
-   OutputtingContext provides the checker to run, and we get the
-   default svn one too.
-
-However, on some systems, output from scheduled tasks is not emailed
-to the user running the task. In this case, some special lines may be
-added to :file:`checker.txt` as follows::
-
-  email_to: recipient1@example.com,recipient2@example.com
-  email_from: sender@example.com
-  email_subject: Checker output from myhost
-  email_smtphost: smtp.example.com
-
-.. -> checker_txt
-
-.. invisible-code-block: python
-
-  from __future__ import with_statement
-  with OutputtingContext() as c:
-      c.run_with_config(checker_txt)
-      c.check_email_config(
-          'sender@example.com',
-          ['recipient1@example.com', 'recipient2@example.com'],
-          'Checker output from myhost',
-          'smtp.example.com',
-          )
-
-Only `email_to` is required, and once specified, if the other options
-are not present, the following defaults will be used:
-
-`email_from`
-  The `email_to` value will be used if no `email_from` is supplied.
-
-`email_subject`
-  If not specified, the subject will default to the text::
- 
-    Checker output
-   
-  followed by the hostname of the machine on which Checker is run.
-
-`email_smtphost`
-  This defaults to `localhost`.
+>>> print output
+['x=1', '--y=2', 'a', 'b']
+An error occurred!
+<BLANKLINE>
