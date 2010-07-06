@@ -7,3 +7,5 @@ for running executables in a sub-process using the ``subprocess``
 module.
 
 For documentation, see `http://packages.python.org/execute`__
+
+__ http://packages.python.org/execute

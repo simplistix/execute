@@ -38,7 +38,7 @@ to be uploaded to PyPI is valid::
 
   $ bin/docpy setup.py --long-description | bin/rst2 html \
     --link-stylesheet \
-    --stylesheet=http://www.python.org/styles/styles.css > build/desc.html
+    --stylesheet=http://www.python.org/styles/styles.css > dist/desc.html
 
 Once you're certain everything is as it should be, the following will
 build the distribution, upload it to PyPI, register the metadata with
