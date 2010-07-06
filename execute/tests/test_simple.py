@@ -3,7 +3,7 @@
 # See license.txt for more details.
 from __future__ import with_statement
 
-import sys
+import os,sys
 
 from execute import simple
 from mock import Mock
@@ -44,7 +44,17 @@ class TestSimple(TestCase):
                 "import os",
                 "print os.getcwd()",
                 )),path=True)
-        compare(dir+'\n',
+
+        # tempdirs on Mac OS X give a different path
+        # after you've os.chdir's into them!
+        cur = os.getcwd()
+        try:
+            os.chdir(dir)
+            expected = os.getcwd()+'\n'
+        finally:
+            os.chdir(cur)
+            
+        compare(expected,
                 simple(sys.executable+' '+path,cwd=dir))
 
     def test_popen_params(self):
