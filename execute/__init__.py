@@ -4,6 +4,16 @@
 
 from subprocess import Popen,PIPE,STDOUT
 
+def _popen(command,cwd):
+    return Popen(
+        command,
+        stderr=STDOUT,
+        stdout=PIPE,
+        universal_newlines=True,
+        cwd=cwd,
+        shell=True,
+        )
+
 def simple(command,cwd=None):
     """Execute the command specified in a sub-process.
 
@@ -24,11 +34,28 @@ def simple(command,cwd=None):
       or error streams by the command as it runs.
     
     """
-    return Popen(
-        command,
-        stderr=STDOUT,
-        stdout=PIPE,
-        universal_newlines=True,
-        cwd=cwd,
-        shell=True,
-        ).communicate()[0]
+    return _popen(command,cwd).communicate()[0]
+
+def returncode(command,cwd=None):
+    """Execute the command specified in a sub-process.
+
+    This command must take no input. The exit code set
+    by the command will be returned. Any output from the
+    command to either the standard or error streams will
+    be discarded.
+
+    :param command:
+      A string containing the command to be executed.
+
+    :param cwd:
+      An optional current working directory in which to
+      run the command. If not specified, the current working
+      directory will be left as-is.
+     
+    :returns:
+      The exit code set by the command that was run.
+    
+    """
+    p = _popen(command,cwd)
+    p.communicate()
+    return p.returncode

@@ -5,7 +5,7 @@ import os
 from setuptools import setup, find_packages
 
 package_name = 'execute'
-version = '1.0'
+version = '1.1dev'
 base_dir = os.path.dirname(__file__)
 
 setup(

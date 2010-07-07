@@ -1,9 +1,8 @@
 Using Execute
 =============
 
-Execute currently only provides one pattern of sub-process
-execution. That pattern is covered by the :func:`~execute.simple`
-function described below.
+Execute provides handy functions for several patterns of sub-process
+execution. Each of these patterns is described below.
 
 Simple
 ------
@@ -46,3 +45,36 @@ with it:
 ['x=1', '--y=2', 'a', 'b']
 An error occurred!
 <BLANKLINE>
+
+Return Code
+-----------
+
+The :func:`~execute.returncode` function provides a simple way to get 
+the return code set by the command executed. 
+The command is run in a sub-process and must require no input.
+
+For example, suppose you needed to get the return code set by the 
+following python script::
+
+  import sys
+  sys.exit(4)
+
+.. -> source
+
+.. invisible-code-block: python
+
+   path = temp_dir.write('test.py',source,path=True)
+
+If ``python`` contained the path to the python executable
+you'd want to use to run the above script, and ``path`` contained the
+path to the script on disk, you could use :func:`~execute.returncode` 
+to obtain the return code as follows:
+
+>>> from execute import returncode
+>>> code = returncode(python+' '+path)
+
+You now have the return code and can do whatever you like
+with it:
+
+>>> print code
+4
