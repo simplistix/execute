@@ -1,5 +1,16 @@
 Changes
 =======
+
+1.2 (02 Aug 2010)
+-----------------
+
+- Add :func:`~execute.both` function.
+ 
+1.1 (07 Jul 2010)
+-----------------
+
+- Add :func:`~execute.returncode` function.
+ 
 1.0 (06 Jul 2010)
 -----------------
 

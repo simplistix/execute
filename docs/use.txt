@@ -78,3 +78,45 @@ with it:
 
 >>> print code
 4
+
+Both
+----
+
+The :func:`~execute.both` function provides a simple way to get the
+output and return code of the command executed.
+The command is run in a sub-process and must require no input.
+The output of both the standard and error output streams will be combined
+and returned in one string.
+
+For example, suppose you needed to execute the following python script
+in a sub-process, want its output and want to know if it succeeded by
+way of its return code::
+
+  import sys
+  print sys.argv[1:]
+  sys.stdout.flush()
+  sys.stderr.write('An error occurred!\n')
+  sys.exit(13)
+
+.. -> source
+
+.. invisible-code-block: python
+
+   path = temp_dir.write('test.py',source,path=True)
+
+If ``python`` contained the path to the python executable
+you'd want to use to run the above script, and ``path`` contained the
+path to the script on disk, you could use :func:`~execute.both` to
+run it, capturing the output and the return code as follows: 
+
+>>> from execute import both
+>>> output, returncode = both(' '.join((python,path,'x=1 --y=2 a b')))
+
+You can now do whatever you like with either the output or the return code:
+
+>>> print output
+['x=1', '--y=2', 'a', 'b']
+An error occurred!
+<BLANKLINE>
+>>> print returncode
+13
